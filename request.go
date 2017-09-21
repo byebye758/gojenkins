@@ -263,3 +263,13 @@ func (r *Requester) ReadJSONResponse(response *http.Response, responseStruct int
 	json.NewDecoder(response.Body).Decode(responseStruct)
 	return response, nil
 }
+
+func (r *Requester) PostCredentialsJSON(endpoint string, payload io.Reader, responseStruct interface{}, querystring map[string]string) (*http.Response, error) {
+	ar := NewAPIRequest("POST", endpoint, payload)
+	if err := r.SetCrumb(ar); err != nil {
+		return nil, err
+	}
+	ar.SetHeader("Content-Type", "application/x-www-form-urlencoded")
+	//ar.Suffix = "api/json"
+	return r.Do(ar, &responseStruct, querystring)
+}
